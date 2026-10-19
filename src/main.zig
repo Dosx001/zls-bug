@@ -1,9 +1,14 @@
 const std = @import("std");
 const Io = std.Io;
+const c = @import("c");
 
 const new = @import("zls-bug");
 
 pub fn main(init: std.process.Init) !void {
+    _ = c.gtk_application_new(
+        "com.hello.world",
+        c.G_APPLICATION_DEFAULT_FLAGS,
+    );
     // Prints to stderr, unbuffered, ignoring potential errors.
     std.debug.print("All your {s} are belong to us.\n", .{"codebase"});
 

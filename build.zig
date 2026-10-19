@@ -1,4 +1,5 @@
 const std = @import("std");
+const Translator = @import("translate_c").Translator;
 
 // Although this function looks imperative, it does not perform the build
 // directly and instead it mutates the build graph (`b`) that will be then
@@ -41,6 +42,16 @@ pub fn build(b: *std.Build) void {
         .target = target,
     });
 
+    const translate_c = b.dependency("translate_c", .{});
+    const c = Translator.init(translate_c, .{
+        .c_source_file = b.path("src/c.h"),
+        .target = target,
+        .optimize = optimize,
+        .link_system_libs = &.{
+            .{ .name = "gtk4" },
+        },
+    });
+
     // Here we define an executable. An executable needs to have a root module
     // which needs to expose a `main` function. While we could add a main function
     // to the module defined above, it's sometimes preferable to split business
@@ -79,6 +90,7 @@ pub fn build(b: *std.Build) void {
                 // can be extremely useful in case of collisions (which can happen
                 // importing modules from different packages).
                 .{ .name = "zls-bug", .module = mod },
+                .{ .name = "c", .module = c.mod },
             },
         }),
     });
